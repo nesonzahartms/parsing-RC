@@ -1,32 +1,32 @@
-[
-    {
+{
+    "https://dentalia.com/": {
         "name": null,
         "address": null,
-        "latlon": [
+        "latitude_longitude": [
             null,
             null
         ],
         "phones": [],
         "working_hours": {}
     },
-    {
+    "https://omsk.yapdomik.ru/": {
         "name": null,
         "address": null,
-        "latlon": [
+        "latitude_longitude": [
             null,
             null
         ],
         "phones": [],
         "working_hours": {}
     },
-    {
+    "https://www.santaelena.com.co/": {
         "name": "Pasteleria Santa Elena",
         "address": null,
-        "latlon": [
+        "latitude_longitude": [
             null,
             null
         ],
         "phones": [],
         "working_hours": {}
     }
-]
+}
