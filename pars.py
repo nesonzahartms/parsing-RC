@@ -2,49 +2,50 @@ import requests
 from bs4 import BeautifulSoup
 import json
 
-# url_1 = 'https://dentalia.com/'
-# url_2 = 'https://omsk.yapdomik.ru/'
-# url_3 = 'https://www.santaelena.com.co/'
+
+def _parse_element(element) -> str | None:
+    if element is not None and hasattr(element, "text"):
+        return element.text.strip()
+
+    return None
 
 
-def get_location(url):
+def get_location(url: str) -> dict[str, str]:
     page = requests.get(url)
+    page.raise_for_status()
     soup = BeautifulSoup(page.content, 'html.parser')
 
     # Парсинг названия локации
-    loc_name = soup.find('h1')
-    if loc_name is not None:
-        loc_name = loc_name.text.strip()
-    else:
-        loc_name = 'Название не найдено'
+    loc_name = _parse_element(element=soup.find('h1'))
+
+    # Парсинг адреса
+    address = _parse_element(element=soup.find('div', class_='address'))
 
     # Парсинг координат
-    coordinator = soup.find('div', class_='coordinator')
-    if coordinator is not None:
-        coordinator = coordinator.text.strip()
-    else:
-        coordinator = 'Локация не найдена'
+    latitude = _parse_element(element=soup.find('div', class_='latitude'))
+    longitude = _parse_element(element=soup.find('div', class_='longitude'))
 
     # Парсинг телефонов
-    phones = []
-    phone_elements = soup.find_all('div', class_='phone')
-    for phone_element in phone_elements:
-        phones.append(phone_element.text.strip())
+    phones = [
+        _parse_element(phone)
+        for phone in soup.find_all('div', class_='phone')
+    ]
 
     # Парсинг времени работы
     working_hours = {}
     days = soup.find_all('div', class_='day')
     for day in days:
-        day_name = day.find('span', class_='name').text.strip()
-        day_hours = day.find('span', class_='hours').text.strip()
+        day_name = _parse_element(element=day.find('span', class_='name'))
+        day_hours = _parse_element(element=day.find('span', class_='hours'))
         working_hours[day_name] = day_hours
 
     # Объект с информацией о локации
     location_info = {
-        'Название локации': loc_name,
-        'Координаты': coordinator,
-        'Телефоны': phones,
-        'Время работы': working_hours
+        'name': loc_name,
+        'address': address,
+        'latlon': [latitude, longitude],
+        'phone': phones,
+        'working_hours': working_hours
     }
 
     return location_info
@@ -56,15 +57,12 @@ def scrape_locations():
         'https://omsk.yapdomik.ru/',
         'https://www.santaelena.com.co/'
     ]
-
-    all_locations = []
-
-    for website in websites:
-        location_info = get_location(website)
-        all_locations.append(location_info)
+    all_locations = [
+        get_location(website) for website in websites
+    ]
 
     # Сохранение информации в JSON-файл
-    with open('locations.json', 'w') as file:
+    with open('locations.json', 'w', encoding="UTF-8") as file:
         json.dump(all_locations, file, indent=4)
 
     print('Информация о локациях успешно собрана и сохранена в файле locations.json')
