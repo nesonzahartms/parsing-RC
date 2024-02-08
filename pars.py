@@ -28,7 +28,7 @@ def get_location(url: str) -> dict[str, str]:
     # Парсинг телефонов
     phones = [
         _parse_element(phone)
-        for phone in soup.find_all('div', class_='phones')
+        for phone in soup.find_all('div', class_='phone')
     ]
 
     # Парсинг времени работы
@@ -43,7 +43,7 @@ def get_location(url: str) -> dict[str, str]:
     location_info = {
         'name': loc_name,
         'address': address,
-        'latlon': [latitude, longitude],
+        'latitude_longitude': [latitude, longitude],
         'phones': phones,
         'working_hours': working_hours
     }
@@ -52,18 +52,18 @@ def get_location(url: str) -> dict[str, str]:
 
 
 def scrape_locations():
-    websites = [
+    websites_urls = [
         'https://dentalia.com/',
         'https://omsk.yapdomik.ru/',
         'https://www.santaelena.com.co/'
     ]
-    all_locations = [
-        get_location(website) for website in websites
-    ]
+    websites_data = {}
+    for url in websites_urls:
+        websites_data[url] = get_location(url)
 
     # Сохранение информации в JSON-файл
     with open('locations.json', 'w', encoding="UTF-8") as file:
-        json.dump(all_locations, file, indent=4)
+        json.dump(websites_data, file, indent=4)
 
     print('Информация о локациях успешно собрана и сохранена в файле locations.json')
 
