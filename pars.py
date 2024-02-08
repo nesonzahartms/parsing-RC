@@ -28,7 +28,7 @@ def get_location(url: str) -> dict[str, str]:
     # Парсинг телефонов
     phones = [
         _parse_element(phone)
-        for phone in soup.find_all('div', class_='phone')
+        for phone in soup.find_all('div', class_='phones')
     ]
 
     # Парсинг времени работы
@@ -44,7 +44,7 @@ def get_location(url: str) -> dict[str, str]:
         'name': loc_name,
         'address': address,
         'latlon': [latitude, longitude],
-        'phone': phones,
+        'phones': phones,
         'working_hours': working_hours
     }
 
